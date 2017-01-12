@@ -1,0 +1,20 @@
+
+# pcap1.pcap
+alert tcp any any -> $HOME_NET any (msg:"Heartbleed vulnerability exploitation attempt"; flow: to_server; content:"|18 03 02 00 03 01 40 00|"; reference:cve, CVE-2014-0160; sid:1000001; rev:1;)
+
+# pcap2.pcap
+alert tcp any any -> $HTTP_SERVERS $HTTP_PORTS (msg: "SQL injection attempt"; flow: to_server, established; content: "GET"; http_method; pcre: "/(and|or)\+1=0/i"; sid:1000002; rev:1;)
+
+# pcap3.pcap
+alert tcp any any -> $HOME_NET $HTTP_PORTS (msg:"Shellshock Bash environment variable injection"; content:"() {"; http_header; fast_pattern:only; reference:cve,2014-6271; sid:1000003; rev:1;)
+
+# pcap4.pcap
+alert tcp any any -> $HOME_NET any (msg:"Nmap XMAS scan"; flags:FPU,12; flow:stateless; reference:arachnids,30; classtype:attempted-recon; sid:1000004; rev:1;)
+
+#pcap5.pcap
+alert tcp $EXTERNAL_NET $HTTP_PORTS -> $HOME_NET any (msg:"ET CURRENT_EVENTS DRIVEBY Angler EK Apr 01 2014"; flow:established,to_client; content:"Expires|3a| Sat, 26 Jul 1997 05|3a|00|3a|00 GMT|0d 0a|Last-Modified|3a| Sat, 26 Jul 2040 05|3a|00|3a|00 GMT|0d 0a|"; fast_pattern:55,20; http_header; classtype:trojan-activity; sid:2019224; rev:4;)
+
+alert tcp $EXTERNAL_NET $HTTP_PORTS -> $HOME_NET any (msg:"ET CURRENT_EVENTS Angler EK encrypted binary (3) Jan 17 2013"; flow:established,to_client; file_data; content:"|7d 6b f8 64 76 74 6e 66|"; within:8; flowbits:set,et.exploitkitlanding; classtype:trojan-activity; sid:2017986; rev:1;)
+
+# pcap6.pcap
+alert tcp any any -> $HOME_NET 445 (msg:"NetBIOS SMB LSASS bind attempt"; content:"|00|"; offset:0; depth:1; content:"|FF|SMB"; nocase; offset:4; depth:4; content:"|6A 28 19 39 0C B1 D0 11 9B A8 00 C0 4F D9 2E F5|"; distance:112; within:16; reference:cve,CVE-2003-0533; sid:1000006; rev:1;)

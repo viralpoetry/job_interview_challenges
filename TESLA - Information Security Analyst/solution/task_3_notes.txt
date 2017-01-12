@@ -1,0 +1,64 @@
+
+Helpful:
+http://unix.stackexchange.com/questions/82314/how-to-find-the-type-of-img-file-and-mount-it
+
+
+##################
+~/Downloads/aptitude$ fsstat disk.img
+# cannot determine filesystem type 
+
+##################
+~/Downloads/aptitude$ file -k disk.img 
+disk.img: x86 boot sector; partition 1: ID=0xb, starthead 32, startsector 2, 8190 sectors
+
+##################
+~/Downloads/aptitude$ fdisk -lu disk.img 
+
+Disk disk.img: 4 MB, 4194304 bytes
+131 heads, 2 sectors/track, 31 cylinders, total 8192 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000
+
+   Device Boot      Start         End      Blocks   Id  System
+disk.img1               2        8191        4095    b  W95 FAT32
+
+##################
+~/Downloads/aptitude$ img_stat disk.img 
+IMAGE FILE INFORMATION
+--------------------------------------------
+Image Type: raw
+
+Size in bytes: 4194304
+
+##################
+# check the partitions
+~/Downloads/aptitude$ mmls -t dos disk.img 
+DOS Partition Table
+Offset Sector: 0
+Units are in 512-byte sectors
+
+     Slot    Start        End          Length       Description
+00:  Meta    0000000000   0000000000   0000000001   Primary Table (#0)
+01:  -----   0000000000   0000000001   0000000002   Unallocated
+02:  00:00   0000000002   0000008191   0000008190   Win95 FAT32 (0x0B)
+
+##################
+# check strings
+~/Downloads/aptitude$ strings -a -tx disk.img
+...
+
+##################
+# create new mount dir and mount the image
+~$ sudo mkdir /media/tesla_usb
+~/Downloads/aptitude$ sudo mount -t auto -o loop,offset=1024 disk.img /media/tesla_usb/
+
+##################
+# examine filesystem
+user@user-PC:~/Downloads/aptitude$ mount
+...
+/home/user/Downloads/aptitude/disk.img on /media/tesla_usb type vfat (rw)
+
+
+
